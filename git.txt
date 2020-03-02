@@ -1,0 +1,2 @@
+git remote add origin https://github.com/zsolt0005/moorhuhn.git
+git push -u origin master

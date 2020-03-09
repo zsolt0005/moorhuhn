@@ -1,0 +1,23 @@
+Label{-fx-font-size: 20;}
+
+TextField{
+    -fx-font-size: 14;
+    -fx-focus-color: transparent;
+    -fx-background-radius: 10;
+}
+
+CheckBox{
+    -fx-font-size: 20;
+    -fx-focus-color: transparent;
+    -fx-background-color: rgba(48, 22, 22, 0.5);
+}
+
+ComboBox{-fx-font-size: 14;}
+
+Button{
+    -fx-background-color: transparent;
+}
+
+VBox{
+    -fx-alignment: center;
+}

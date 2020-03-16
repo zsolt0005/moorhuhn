@@ -1,7 +1,9 @@
 package zsolt.master;
 
 // javaFX
-import javafx.event.ActionEvent;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -19,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
+import javafx.util.Duration;
 import sample.Main;
 import sample.Settings;
 
@@ -31,6 +34,10 @@ import java.util.Random;
 public class sceneHandler {
 
     public static audio audio = new audio();
+    static Timeline tReload = new Timeline(new KeyFrame(Duration.millis(1), e->{
+        doReloading();
+    }));
+    public static boolean waitForRelodIsplaying = false;
 
     static Image cursor0 = new Image("file:img/crosshair/crosshair0.png");
     static Image cursor1 = new Image("file:img/crosshair/crosshair2.png");
@@ -40,7 +47,7 @@ public class sceneHandler {
     static ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
 
     // LAUNCH SCENE TODO: DEVELOPER SETTINGS SET
-    public void setupLauchMenu(){
+    public void setupLaunchMenu(){
         // Get menu
         Group g = new Group();
         StackPane root = new StackPane();
@@ -437,14 +444,20 @@ public class sceneHandler {
         // On click
         m.setOnMouseClicked(e->shot(e));
 
-        // On keyboard pressed (R) -> reload
+        // On keyboard pressed
         m.setOnKeyPressed(e->{
-            if(e.getCode() == KeyCode.R){
+            // (R) -> reload
+            if(e.getCode() == KeyCode.R)
                 reload();
-            }
+
+            // (ESC) -> pause
+            if(e.getCode() == KeyCode.ESCAPE)
+                showPauseMenu();
         });
 
         // </editor-fold>
+
+        // TODO: GameOver menu
 
         // Add all elements to scene
         g.getChildren().addAll(iv_bg, gui);
@@ -452,6 +465,12 @@ public class sceneHandler {
         // Set menu
         Main.gameScene = m;
     }
+
+    // PAUSE
+    void showPauseMenu(){
+        // TODO: pause menu
+    }
+    // GAME OVER
 
     // Save settings and launch game
     void saveSettings(String username, boolean defaultCursor, int resW, int resH){
@@ -600,18 +619,60 @@ public class sceneHandler {
     // Shot handler
     public static void shot(MouseEvent e){
 
+        if(Settings.reloading)
+            Settings.currentReloadTime = 0;
+
         if(Settings.currentBullets -1 < 0){
+            audio.playEmpty();
             reload();
-        }else{
+        }
+        else{
             Settings.currentBullets--;
             audio.playShot();
             Settings.bulletsShot++;
         }
     }
 
+    // Reloading handler
     public static void reload(){
-        // TODO: Reload
-        System.out.println("Reloading...");
+        if(Settings.currentBullets >= Settings.maxBullets)
+            return;
+
+        Settings.reloading = true;
+
+        // Reload
+        tReload.setCycleCount(Animation.INDEFINITE);
+        tReload.play();
+    }
+    static void doReloading(){
+
+        // Interrupted reloading
+        if(!Settings.reloading) {
+            Settings.currentReloadTime = 0;
+            audio.isPlayingReloading = false;
+            return;
+        }
+
+        // Check for full magazine
+        if(Settings.currentBullets >= Settings.maxBullets)
+            tReload.stop();
+
+        // Finish reloading
+        if(Settings.currentReloadTime + 0.001 >= Settings.reloadTime){
+            Settings.currentBullets++;
+            Settings.currentReloadTime = 0;
+            audio.isPlayingReloading = false;
+            return;
+        }
+
+        // check timing for sound effect (Reload effect is 0.6 sec long)
+        if(!audio.isPlayingReloading){
+            audio.playReload();
+            audio.isPlayingReloading = true;
+        }
+
+        // Time elapsed
+        Settings.currentReloadTime += 0.001;
     }
 }
     // <editor-fold desc="">

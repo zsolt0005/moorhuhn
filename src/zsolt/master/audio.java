@@ -24,6 +24,10 @@ public class audio {
     static AudioClip hit = new AudioClip(new File("sounds/hit.mp3").toURI().toString());
     static AudioClip reload = new AudioClip(new File("sounds/reload.mp3").toURI().toString());
     static AudioClip shot = new AudioClip(new File("sounds/shot.mp3").toURI().toString());
+    public static AudioClip empty = new AudioClip(new File("sounds/empty.wav").toURI().toString());
+
+    // isPlaying
+    public static boolean isPlayingReloading = false;
 
     // Initialize audio
     public audio(){
@@ -37,6 +41,7 @@ public class audio {
         hit.setVolume(Settings.soundVolume);
         reload.setVolume(Settings.soundVolume);
         shot.setVolume(Settings.soundVolume);
+        empty.setVolume(Settings.soundVolume);
 
         // </editor-fold>
 
@@ -110,5 +115,6 @@ public class audio {
     static public void playHit(){ if(Settings.sound) hit.play(); }
     static public void playReload(){ if(Settings.sound) reload.play(); }
     static public void playShot(){ if(Settings.sound) shot.play(); }
+    static public void playEmpty(){ if(Settings.sound) empty.play(); }
 
 }

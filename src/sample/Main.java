@@ -52,6 +52,6 @@ public class Main extends Application {
         window.show();
 
         // Setup scenes
-        sh.setupLauchMenu();
+        sh.setupLaunchMenu();
     }
 }

@@ -64,9 +64,6 @@ public class BirdHandler {
         Settings.score += points;
         Settings.bulletsHit++;
 
-        // TODO: Remove debug
-        System.out.println("Points: " + points + " | Shots: " + Settings.bulletsShot + " | Hits: " + Settings.bulletsHit);
-
         // Delete from view
         g.getChildren().remove(b);
 

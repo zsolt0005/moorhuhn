@@ -34,7 +34,9 @@ public class Settings {
     public static int score = 0;
     public static int time = 0;
         // Bullets
+    public static  boolean reloading = false;
     public static double reloadTime = 0.6; // Seconds
+    public static double currentReloadTime = 0;
     public static int maxBullets = 6; // Max bullets player can have loaded
     public static int currentBullets = 6; // Players bullets loaded
     public static int bulletsShot = 0; // How many times player shot a bullet

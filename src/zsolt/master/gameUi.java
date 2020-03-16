@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -14,6 +15,7 @@ import sample.Settings;
 public class gameUi extends Canvas {
 
     GraphicsContext gc;
+    Image bullet = new Image("file:img/bullets/bullet.png", 0, getHeight() * 0.8, true, true);
 
     public gameUi(){
 
@@ -39,6 +41,7 @@ public class gameUi extends Canvas {
     }
 
     void timeHandler(){
+        // TODO: check for time out (GAME OVER)
         if(!Settings.isPaused)
             Settings.time++;
     }
@@ -82,16 +85,22 @@ public class gameUi extends Canvas {
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setFill(Color.WHITE);
 
-        // Score -> LEFT
-        gc.fillText("Score: " + Settings.score, getWidth() * 0.1, getHeight() / 2);
-        gc.strokeText("Score: " + Settings.score, getWidth() * 0.1, getHeight() / 2);
+        // Score -> LEFT (Adding bullet width for the same spacing as bullets)
+        gc.fillText("Score: " + Settings.score, (getWidth() * 0.05) + (bullet.getWidth() / 2), getHeight() / 2);
+        gc.strokeText("Score: " + Settings.score, (getWidth() * 0.05) + (bullet.getWidth() / 2), getHeight() / 2);
 
         // Game time -> CENTER
         gc.fillText(getTime(), getWidth() * 0.5, getHeight() / 2);
         gc.strokeText(getTime(), getWidth() * 0.5, getHeight() / 2);
 
         // Bullets -> RIGHT
-        // TODO: Show current bullets
+        double posY = (getHeight() / 2) - (bullet.getHeight() / 2);
+        double posX = getWidth() * 0.95;
+        int c = Settings.currentBullets;
+
+        for(int i = 0; i < c; i++){
+            gc.drawImage(bullet, posX - (i * bullet.getWidth()), posY);
+        }
     }
 
 }

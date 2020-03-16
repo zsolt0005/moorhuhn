@@ -91,6 +91,7 @@ public class gameUi extends Canvas {
         gc.strokeText(getTime(), getWidth() * 0.5, getHeight() / 2);
 
         // Bullets -> RIGHT
+        // TODO: Show current bullets
     }
 
 }

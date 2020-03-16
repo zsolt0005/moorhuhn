@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -431,9 +432,17 @@ public class sceneHandler {
 
         // </editor-fold>
 
-        // <editor-fold desc="Detect click">
+        // <editor-fold desc="Detect actions">
 
-        g.setOnMouseClicked(e->shot(e));
+        // On click
+        m.setOnMouseClicked(e->shot(e));
+
+        // On keyboard pressed (R) -> reload
+        m.setOnKeyPressed(e->{
+            if(e.getCode() == KeyCode.R){
+                reload();
+            }
+        });
 
         // </editor-fold>
 
@@ -590,7 +599,19 @@ public class sceneHandler {
 
     // Shot handler
     public static void shot(MouseEvent e){
-        Settings.bulletsShot++;
+
+        if(Settings.currentBullets -1 < 0){
+            reload();
+        }else{
+            Settings.currentBullets--;
+            audio.playShot();
+            Settings.bulletsShot++;
+        }
+    }
+
+    public static void reload(){
+        // TODO: Reload
+        System.out.println("Reloading...");
     }
 }
     // <editor-fold desc="">

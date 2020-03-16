@@ -31,7 +31,7 @@ public class Settings {
     // GAME (Every time needs to be set to default -> as is below)
         // General
     public static boolean isPaused = false;
-    public static double score = 0;
+    public static int score = 0;
     public static int time = 0;
         // Bullets
     public static double reloadTime = 0.6; // Seconds
@@ -42,7 +42,7 @@ public class Settings {
         // Birds
     public static int birdSpawnTime = 400;
     public static double birdSize = 0.1;
-    public static int maxBirdsSpawned = 10; // Max birds can be on the screen at the same time
+    public static int maxBirdsSpawned = 6; // Max birds can be on the screen at the same time
     public static double maxBirdsSpeed = 0.5;
     public static double minBirdsSpeed = 0.1;
     public static double maxBirdsVerticalSpeed = 0.08;

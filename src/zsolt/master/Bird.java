@@ -113,7 +113,7 @@ public class Bird extends Canvas {
 
         // Set on click
         setOnMouseClicked(e->{
-            if(isDead || Settings.isPaused || isPassive)
+            if(isDead || Settings.isPaused || isPassive || Settings.currentBullets -1 < 0)
                 return;
 
             // Set dead state

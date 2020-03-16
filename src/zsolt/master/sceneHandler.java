@@ -1,6 +1,7 @@
 package zsolt.master;
 
 // javaFX
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -12,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -429,6 +431,12 @@ public class sceneHandler {
 
         // </editor-fold>
 
+        // <editor-fold desc="Detect click">
+
+        g.setOnMouseClicked(e->shot(e));
+
+        // </editor-fold>
+
         // Add all elements to scene
         g.getChildren().addAll(iv_bg, gui);
 
@@ -545,6 +553,17 @@ public class sceneHandler {
             changeCursor(0);
         });
     }
+    public static void onMouseEnemyDie(Node n){
+        changeCursor(0);
+
+        n.setOnMouseEntered(e->{
+            changeCursor(0);
+        });
+
+        n.setOnMouseExited(e->{
+            changeCursor(0);
+        });
+    }
 
     // center screen
     public void centerScreen(Scene s){
@@ -567,6 +586,11 @@ public class sceneHandler {
 
         // change scene
         changeScene(Main.gameScene);
+    }
+
+    // Shot handler
+    public static void shot(MouseEvent e){
+        Settings.bulletsShot++;
     }
 }
     // <editor-fold desc="">

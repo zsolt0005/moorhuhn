@@ -13,17 +13,17 @@ import java.util.Random;
 public class audio {
 
     // Background music
-    AudioClip bg1 = new AudioClip(new File("sounds/bg1.mp3").toURI().toString());
-    AudioClip bg2 = new AudioClip(new File("sounds/bg2.mp3").toURI().toString());
-    AudioClip bg3 = new AudioClip(new File("sounds/bg3.mp3").toURI().toString());
+    static AudioClip bg1 = new AudioClip(new File("sounds/bg1.mp3").toURI().toString());
+    static AudioClip bg2 = new AudioClip(new File("sounds/bg2.mp3").toURI().toString());
+    static AudioClip bg3 = new AudioClip(new File("sounds/bg3.mp3").toURI().toString());
     int lastPlayed = 0;
     boolean soundState = true;
 
     // Sound effects
-    AudioClip uiEffect = new AudioClip(new File("sounds/uiEffect.mp3").toURI().toString());
-    AudioClip hit = new AudioClip(new File("sounds/hit.mp3").toURI().toString());
-    AudioClip reload = new AudioClip(new File("sounds/reload.mp3").toURI().toString());
-    AudioClip shot = new AudioClip(new File("sounds/shot.mp3").toURI().toString());
+    static AudioClip uiEffect = new AudioClip(new File("sounds/uiEffect.mp3").toURI().toString());
+    static AudioClip hit = new AudioClip(new File("sounds/hit.mp3").toURI().toString());
+    static AudioClip reload = new AudioClip(new File("sounds/reload.mp3").toURI().toString());
+    static AudioClip shot = new AudioClip(new File("sounds/shot.mp3").toURI().toString());
 
     // Initialize audio
     public audio(){
@@ -106,9 +106,9 @@ public class audio {
     }
 
     // Play effects
-    public void playUiEffects(){ if(Settings.sound) uiEffect.play(); }
-    public void playHit(){ if(Settings.sound) hit.play(); }
-    public void playReload(){ if(Settings.sound) reload.play(); }
-    public void playShot(){ if(Settings.sound) shot.play(); }
+    static public void playUiEffects(){ if(Settings.sound) uiEffect.play(); }
+    static public void playHit(){ if(Settings.sound) hit.play(); }
+    static public void playReload(){ if(Settings.sound) reload.play(); }
+    static public void playShot(){ if(Settings.sound) shot.play(); }
 
 }

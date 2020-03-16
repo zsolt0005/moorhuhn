@@ -40,12 +40,14 @@ public class Settings {
     public static int bulletsShot = 0; // How many times player shot a bullet
     public static int bulletsHit = 0; // How many birds player hit
         // Birds
-    public static  double birdSize = 0.1;
-    public static int maxBirdsSpawned = 8;
-    public static double maxBirdsSpeed = 1.5;
-    public static double minBirdsSpeed = 0.4;
-    public static double maxBirdsVertical = 3;
-    public static double minBirdsVertical = 1;
-    public static double maxBirdsSize = 1.5;
-    public static double minBirdsSize = 0.5;
+    public static int birdSpawnTime = 400;
+    public static double birdSize = 0.1;
+    public static int maxBirdsSpawned = 10; // Max birds can be on the screen at the same time
+    public static double maxBirdsSpeed = 0.5;
+    public static double minBirdsSpeed = 0.1;
+    public static double maxBirdsVerticalSpeed = 0.08;
+    public static double minBirdsVerticalSpeed = 0.03;
+    public static double maxBirdsVerticalMove = height * 0.06;
+    public static double minBirdsVerticalMove = height * 0.03;
+    public static double birdRandomizedSize = 0.5; // Adds to random size (0.0 - 1.0) this number
 }

@@ -55,9 +55,3 @@ public class Main extends Application {
         sh.setupLauchMenu();
     }
 }
-
-/*
-    TODO: Add bg sound
-    TODO: Add sound effects to UI
-    TODO: Add sound effects to in-game (shoot, reload etc.)
- */

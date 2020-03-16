@@ -13,11 +13,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
-import javafx.stage.Stage;
 import sample.Main;
 import sample.Settings;
 
@@ -31,12 +29,12 @@ public class sceneHandler {
 
     public static audio audio = new audio();
 
-    Image cursor0 = new Image("file:img/crosshair/crosshair0.png");
-    Image cursor1 = new Image("file:img/crosshair/crosshair2.png");
-    Image cursor2 = new Image("file:img/crosshair/crosshair1.png");
-    ImageCursor ic0 = new ImageCursor(cursor0, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
-    ImageCursor ic1 = new ImageCursor(cursor1, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
-    ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
+    static Image cursor0 = new Image("file:img/crosshair/crosshair0.png");
+    static Image cursor1 = new Image("file:img/crosshair/crosshair2.png");
+    static Image cursor2 = new Image("file:img/crosshair/crosshair1.png");
+    static ImageCursor ic0 = new ImageCursor(cursor0, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
+    static ImageCursor ic1 = new ImageCursor(cursor1, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
+    static ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
 
     // LAUNCH SCENE TODO: DEVELOPER SETTINGS SET
     public void setupLauchMenu(){
@@ -228,14 +226,14 @@ public class sceneHandler {
         // TODO: DEVELOPER SETTIGNS
 
         // Show this scene
-        //changeScene(Main.launchMenu);
+        // changeScene(Main.launchMenu);
         ///*
         Settings.username = "Developer build";
         Settings.width = 1280;
         Settings.height = 720;
-        setupMainMenu();
-        Main.mainMenu.setCursor(ic0);
-        changeScene(Main.mainMenu);
+        setupGameScene();
+        Main.gameScene.setCursor(ic0);
+        changeScene(Main.gameScene);
         //*/
     }
 
@@ -404,7 +402,35 @@ public class sceneHandler {
         Scene m = new Scene(g, Settings.width, Settings.height);
         m.getStylesheets().add("file:css/global.css");
 
-        
+        // <editor-fold desc="Background">
+
+        // Generate random background each time the scene is created (Only when the application is started)
+
+        Random rnd = new Random();
+
+        int bgType = rnd.nextInt((4 - 1) + 1) + 1;
+
+        Image bg = new Image("file:img/bg/BG_0" + bgType + ".png");
+        ImageView iv_bg = new ImageView(bg);
+        iv_bg.setFitHeight(Settings.height);
+        iv_bg.setFitWidth(Settings.width);
+
+        // </editor-fold>
+
+        // <editor-fold desc="Game UI">
+
+        gameUi gui = new gameUi();
+
+        // </editor-fold>
+
+        // <editor-fold desc="Bird handler">
+
+        BirdHandler bh = new BirdHandler(g);
+
+        // </editor-fold>
+
+        // Add all elements to scene
+        g.getChildren().addAll(iv_bg, gui);
 
         // Set menu
         Main.gameScene = m;
@@ -451,7 +477,7 @@ public class sceneHandler {
     }
 
     // Cursor changer
-    public void changeCursor(int type){
+    public static void changeCursor(int type){
 
         // Basic cursor
         if(type == 0){
@@ -509,7 +535,7 @@ public class sceneHandler {
         n.setOnMouseExited(e->changeCursor(0));
         n.setOnMouseReleased(e->changeCursor(1));
     }
-    public void onMouseEnemy(Node n){
+    public static void onMouseEnemy(Node n){
 
         n.setOnMouseEntered(e->{
             changeCursor(2);

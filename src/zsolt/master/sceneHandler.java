@@ -33,18 +33,27 @@ import java.util.Random;
 
 public class sceneHandler {
 
+    // Audio
     public static audio audio = new audio();
+
+    // Reloading
     static Timeline tReload = new Timeline(new KeyFrame(Duration.millis(1), e->{
         doReloading();
     }));
     public static boolean waitForRelodIsplaying = false;
 
+    // Cursors
     static Image cursor0 = new Image("file:img/crosshair/crosshair0.png");
     static Image cursor1 = new Image("file:img/crosshair/crosshair2.png");
     static Image cursor2 = new Image("file:img/crosshair/crosshair1.png");
     static ImageCursor ic0 = new ImageCursor(cursor0, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
     static ImageCursor ic1 = new ImageCursor(cursor1, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
     static ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
+
+    // Temporary groups
+    Group gGameMenu;
+    Group gPauseMenu;
+    Group gGameOver;
 
     // LAUNCH SCENE TODO: DEVELOPER SETTINGS SET
     public void setupLaunchMenu(){
@@ -406,10 +415,10 @@ public class sceneHandler {
     // GAME SCENE
     void setupGameScene(){
         // Get menu
-        Group g = new Group();
+        gGameMenu = new Group();
         StackPane root = new StackPane();
 
-        Scene m = new Scene(g, Settings.width, Settings.height);
+        Scene m = new Scene(gGameMenu, Settings.width, Settings.height);
         m.getStylesheets().add("file:css/global.css");
 
         // <editor-fold desc="Background">
@@ -435,7 +444,7 @@ public class sceneHandler {
 
         // <editor-fold desc="Bird handler">
 
-        BirdHandler bh = new BirdHandler(g);
+        BirdHandler bh = new BirdHandler(gGameMenu);
 
         // </editor-fold>
 
@@ -451,8 +460,18 @@ public class sceneHandler {
                 reload();
 
             // (ESC) -> pause
-            if(e.getCode() == KeyCode.ESCAPE)
-                showPauseMenu();
+            if(e.getCode() == KeyCode.ESCAPE){
+                Settings.isPaused = !Settings.isPaused;
+
+                if(Settings.isPaused){
+                    showPauseMenu();
+                    Settings.music = false;
+                }
+                else{
+                    hidePauseMenu();
+                    Settings.music = true;
+                }
+            }
         });
 
         // </editor-fold>
@@ -460,7 +479,7 @@ public class sceneHandler {
         // TODO: GameOver menu
 
         // Add all elements to scene
-        g.getChildren().addAll(iv_bg, gui);
+        gGameMenu.getChildren().addAll(iv_bg, gui);
 
         // Set menu
         Main.gameScene = m;
@@ -468,8 +487,46 @@ public class sceneHandler {
 
     // PAUSE
     void showPauseMenu(){
-        // TODO: pause menu
+        gPauseMenu = new Group();
+
+        // <editor-fold desc="Setup menu">
+
+            // Prepare size
+        int prefWidth = (int)(Settings.width * 0.3);
+        int prefHeight = (int)(Settings.height * 0.7);
+
+            // Set size
+        gPauseMenu.prefWidth(prefWidth);
+        gPauseMenu.prefHeight(prefHeight);
+
+            // Set location
+        gPauseMenu.setLayoutX((Settings.width / 2) - (prefWidth / 2));
+        gPauseMenu.setLayoutY((Settings.height / 2) - (prefHeight / 2));
+
+        // </editor-fold>
+
+        // <editor-fold desc="Background">
+
+        Image bg = new Image("file:img/menu/table.png");
+        ImageView iv_bg = new ImageView(bg);
+        iv_bg.setFitWidth(prefWidth);
+        iv_bg.setFitHeight(prefHeight);
+
+        // </editor-fold>
+
+        // TODO: Add pause logo, resume button, exit button
+
+        // Add elements
+        gPauseMenu.getChildren().addAll(iv_bg);
+
+        // Show menu
+        gGameMenu.getChildren().add(gPauseMenu);
     }
+    void hidePauseMenu() {
+        // Hide menu
+        gGameMenu.getChildren().remove(gPauseMenu);
+    }
+
     // GAME OVER
 
     // Save settings and launch game
@@ -618,6 +675,8 @@ public class sceneHandler {
 
     // Shot handler
     public static void shot(MouseEvent e){
+        if(Settings.isPaused)
+            return;
 
         if(Settings.reloading)
             Settings.currentReloadTime = 0;
@@ -645,6 +704,8 @@ public class sceneHandler {
         tReload.play();
     }
     static void doReloading(){
+        if(Settings.isPaused)
+            return;
 
         // Interrupted reloading
         if(!Settings.reloading) {

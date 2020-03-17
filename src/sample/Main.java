@@ -17,7 +17,7 @@ public class Main extends Application {
     public static Stage window;
 
     // Scenes
-    public static Scene mainMenu; // Main menu (lauch game, mute audio and music, check heighScore)
+    public static Scene mainMenu; // Main menu (launch game, mute audio and music, check highScore)
     public static Scene launchMenu; // Game settings and name
     public static Scene gameScene; // Actual game
 

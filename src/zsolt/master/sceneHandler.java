@@ -33,6 +33,8 @@ import java.util.Random;
 
 public class sceneHandler {
 
+    // <editor-fold desc="Variables">
+
     // Audio
     public static audio audio = new audio();
 
@@ -50,10 +52,14 @@ public class sceneHandler {
     static ImageCursor ic1 = new ImageCursor(cursor1, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
     static ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
 
-    // Temporary groups
-    Group gGameMenu;
+    // Temporary
+    static Group gGameMenu;
     Group gPauseMenu;
-    Group gGameOver;
+    static Group gGameOver;
+    BirdHandler bh;
+    gameUi gui;
+
+    // </editor-fold>
 
     // LAUNCH SCENE TODO: DEVELOPER SETTINGS SET
     public void setupLaunchMenu(){
@@ -250,9 +256,9 @@ public class sceneHandler {
         Settings.username = "Developer build";
         Settings.width = 1280;
         Settings.height = 720;
-        setupGameScene();
-        Main.gameScene.setCursor(ic0);
-        changeScene(Main.gameScene);
+        setupMainMenu();
+        Main.mainMenu.setCursor(ic0);
+        changeScene(Main.mainMenu);
         //*/
     }
 
@@ -281,7 +287,20 @@ public class sceneHandler {
 
         // </editor-fold>
 
-        // TODO: here add flying birds, not clickable, behind everything (here)
+        // <editor-fold desc="Flying birds">
+
+        Group gBG = new Group();
+        for(int i = 0; i < Settings.mainMenuBirdsCount; i++){
+            // Bird size
+            double sizeOfBird = rnd.nextDouble() + Settings.birdRandomizedSize;
+
+            // Create bird
+            Bird b = new Bird(sizeOfBird);
+            b.isPassive = true;
+            gBG.getChildren().add(b);
+        }
+
+        // </editor-fold>
 
         // <editor-fold desc="Logo">
 
@@ -406,7 +425,7 @@ public class sceneHandler {
 
         // Add all elements to scene
         vb_menu.getChildren().addAll(btn_play, hb_audio, btn_highScore, btn_exit);
-        g.getChildren().addAll(iv_bg, iv_logo, vb_menu);
+        g.getChildren().addAll(iv_bg, gBG, iv_logo, vb_menu);
 
         // Set menu
         Main.mainMenu = m;
@@ -414,6 +433,9 @@ public class sceneHandler {
 
     // GAME SCENE
     void setupGameScene(){
+        // Reset settings
+        resetSettings();
+
         // Get menu
         gGameMenu = new Group();
         StackPane root = new StackPane();
@@ -438,23 +460,28 @@ public class sceneHandler {
 
         // <editor-fold desc="Game UI">
 
-        gameUi gui = new gameUi();
+        if(gui == null)
+            gui = new gameUi();
 
         // </editor-fold>
 
         // <editor-fold desc="Bird handler">
 
-        BirdHandler bh = new BirdHandler(gGameMenu);
+        bh = new BirdHandler(gGameMenu);
 
         // </editor-fold>
 
         // <editor-fold desc="Detect actions">
 
         // On click
-        m.setOnMouseClicked(e->shot(e));
+        m.setOnMousePressed(e->shot(e));
 
         // On keyboard pressed
         m.setOnKeyPressed(e->{
+
+            if(Settings.time >= Settings.maxTime)
+                return;
+
             // (R) -> reload
             if(e.getCode() == KeyCode.R)
                 reload();
@@ -475,8 +502,6 @@ public class sceneHandler {
         });
 
         // </editor-fold>
-
-        // TODO: GameOver menu
 
         // Add all elements to scene
         gGameMenu.getChildren().addAll(iv_bg, gui);
@@ -514,10 +539,60 @@ public class sceneHandler {
 
         // </editor-fold>
 
-        // TODO: Add pause logo, resume button, exit button
+        // <editor-fold desc="Pause logo">
+
+        Image pauseLogo = new Image("file:img/menu/pause-logo.png");
+        ImageView iv_pauseLogo = new ImageView(pauseLogo);
+        iv_pauseLogo.setPreserveRatio(true);
+        iv_pauseLogo.setFitWidth(prefWidth * 0.8);
+        iv_pauseLogo.setLayoutX( (prefWidth / 2) - (iv_pauseLogo.getFitWidth() / 2) );
+
+        // </editor-fold>
+
+        // Box for resume menu
+        VBox vbResume = new VBox();
+
+        double prefBTNWidth = prefWidth * 0.5;
+
+        // <editor-fold desc="BUTTON Resume">
+
+        Image imgResume = new Image("file:img/btn/resume.png");
+        ImageView iv_resume = new ImageView(imgResume);
+        iv_resume.setPreserveRatio(true);
+        iv_resume.setFitWidth(prefBTNWidth);
+        onMouseUI(iv_resume);
+        iv_resume.setOnMouseClicked(e->{
+            hidePauseMenu();
+            Settings.music = true;
+            Settings.isPaused = false;
+        });
+
+        // </editor-fold>
+
+        // <editor-fold desc="BUTTON Exit">
+
+        Image img_exit = new Image("file:img/btn/exit.png");
+        ImageView iv_exit = new ImageView(img_exit);
+        iv_exit.setPreserveRatio(true);
+        iv_exit.setFitWidth(prefBTNWidth);
+        onMouseUI(iv_exit);
+        iv_exit.setOnMouseClicked(e->{
+            changeScene(Main.mainMenu);
+            Settings.music = true;
+            Settings.isPaused = false;
+            tReload.stop();
+        });
+
+        // </editor-fold>
+
+        // Setup VBox
+        vbResume.setPrefWidth(prefWidth);
+        vbResume.setPrefHeight(prefHeight);
+        vbResume.setAlignment(Pos.CENTER);
 
         // Add elements
-        gPauseMenu.getChildren().addAll(iv_bg);
+        vbResume.getChildren().addAll(iv_resume, iv_exit);
+        gPauseMenu.getChildren().addAll(iv_bg, iv_pauseLogo, vbResume);
 
         // Show menu
         gGameMenu.getChildren().add(gPauseMenu);
@@ -528,6 +603,193 @@ public class sceneHandler {
     }
 
     // GAME OVER
+    public static void gameOver(){
+
+        // Stop game
+        Settings.isPaused = true;
+
+        gGameOver = new Group();
+
+        // <editor-fold desc="Setup menu">
+
+        // Prepare size
+        int prefWidth = (int)(Settings.width * 0.3);
+        int prefHeight = (int)(Settings.height * 0.7);
+
+        // Set size
+        gGameOver.prefWidth(prefWidth);
+        gGameOver.prefHeight(prefHeight);
+
+        // Set location
+        gGameOver.setLayoutX((Settings.width / 2) - (prefWidth / 2));
+        gGameOver.setLayoutY((Settings.height / 2) - (prefHeight / 2));
+
+        // </editor-fold>
+
+        // <editor-fold desc="Background">
+
+        Image bg = new Image("file:img/menu/table.png");
+        ImageView iv_bg = new ImageView(bg);
+        iv_bg.setFitWidth(prefWidth);
+        iv_bg.setFitHeight(prefHeight);
+
+        // </editor-fold>
+
+        // <editor-fold desc="Game over logo">
+
+        Image pauseLogo = new Image("file:img/menu/gameOver-logo.png");
+        ImageView iv_pauseLogo = new ImageView(pauseLogo);
+        iv_pauseLogo.setPreserveRatio(true);
+        iv_pauseLogo.setFitWidth(prefWidth * 0.8);
+        iv_pauseLogo.setLayoutX( (prefWidth / 2) - (iv_pauseLogo.getFitWidth() / 2) );
+
+        // </editor-fold>
+
+        // <editor-fold desc="Statistics">
+        VBox vbStats = new VBox();
+
+        // HBox SCORE
+        HBox hbScore = new HBox();
+        Label lb_text1 = new Label("Score: ");
+        Label lb_Score = new Label(Settings.score + "");
+        lb_text1.setId("GameOverLabel");
+        lb_Score.setId("Highlight");
+        hbScore.getChildren().addAll(lb_text1, lb_Score);
+        hbScore.setPrefWidth(prefWidth);
+        hbScore.setAlignment(Pos.CENTER);
+
+        // HBox Bullets
+        HBox hbBullets = new HBox();
+        Label lb_text2 = new Label("Bullets shot: ");
+        Label lb_BulletsShot = new Label(Settings.bulletsShot + "");
+        lb_text2.setId("GameOverLabel");
+        lb_BulletsShot.setId("Highlight");
+        hbBullets.getChildren().addAll(lb_text2, lb_BulletsShot);
+        hbBullets.setPrefWidth(prefWidth);
+        hbBullets.setAlignment(Pos.CENTER);
+
+        // HBox Bullets Hit
+        HBox hbBulletsHit = new HBox();
+        Label lb_text3 = new Label("Bullets hit: ");
+        Label lb_BulletsShotHit = new Label(Settings.bulletsHit + "");
+        lb_text3.setId("GameOverLabel");
+        lb_BulletsShotHit.setId("Highlight");
+        hbBulletsHit.getChildren().addAll(lb_text3, lb_BulletsShotHit);
+        hbBulletsHit.setPrefWidth(prefWidth);
+        hbBulletsHit.setAlignment(Pos.CENTER);
+
+        // HBox Bullets Missed
+        HBox hbBulletsMiss = new HBox();
+        Label lb_text4 = new Label("Bullets missed: ");
+        Label lb_BulletsShotMiss = new Label((Settings.bulletsShot - Settings.bulletsHit) + "");
+        lb_text4.setId("GameOverLabel");
+        lb_BulletsShotMiss.setId("Highlight");
+        hbBulletsMiss.getChildren().addAll(lb_text4, lb_BulletsShotMiss);
+        hbBulletsMiss.setPrefWidth(prefWidth);
+        hbBulletsMiss.setAlignment(Pos.CENTER);
+
+        // HBox Accuracy
+        double accuracy = 0;
+        if(Settings.bulletsHit != 0)
+            accuracy = (double)(Settings.bulletsHit * 100) / (double)Settings.bulletsShot;
+
+        HBox hbAccuracy = new HBox();
+        Label lb_text5 = new Label("Accuracy: ");
+        Label lb_Accuracy = new Label(accuracy + "%");
+        lb_text5.setId("GameOverLabel");
+        lb_Accuracy.setId("Highlight");
+        hbAccuracy.getChildren().addAll(lb_text5, lb_Accuracy);
+        hbAccuracy.setPrefWidth(prefWidth);
+        hbAccuracy.setAlignment(Pos.CENTER);
+
+        // </editor-fold>
+
+        // TODO: Add functionality to buttons, scale stat text
+        // <editor-fold desc="Buttons">
+
+        // Box for GAME OVER menu
+        HBox hbmenu = new HBox();
+
+        double prefBTNWidth = prefWidth * 0.2;
+
+        // <editor-fold desc="BUTTON Again">
+
+        Image imgAgain = new Image("file:img/btn/button_restart.png");
+        ImageView iv_Again = new ImageView(imgAgain);
+        iv_Again.setPreserveRatio(true);
+        iv_Again.setFitWidth(prefBTNWidth);
+        onMouseUI(iv_Again);
+        iv_Again.setOnMouseClicked(e->{
+            System.out.println("Again");
+        });
+
+        // </editor-fold>
+
+        // <editor-fold desc="BUTTON Close">
+
+        Image imgClose = new Image("file:img/btn/button_close.png");
+        ImageView iv_Close = new ImageView(imgClose);
+        iv_Close.setPreserveRatio(true);
+        iv_Close.setFitWidth(prefBTNWidth);
+        onMouseUI(iv_Close);
+        iv_Close.setOnMouseClicked(e->{
+            System.out.println("Close");
+        });
+
+        // </editor-fold>
+
+        // Setup VBox
+        hbmenu.setPrefWidth(prefWidth);
+        hbmenu.setSpacing(prefWidth * 0.1);
+        hbmenu.setAlignment(Pos.BOTTOM_CENTER);
+
+        // </editor-fold>
+
+        // Setup VBox for stats
+        vbStats.setPrefWidth(prefWidth);
+        vbStats.setPrefHeight(prefHeight);
+        vbStats.setSpacing(prefHeight * 0.02);
+        vbStats.setMargin(hbScore, new Insets(prefHeight * 0.15, 0, 0, 0));
+
+        // Add elements
+        hbmenu.getChildren().addAll(iv_Again, iv_Close);
+        vbStats.getChildren().addAll(hbScore, hbBullets, hbBulletsHit, hbBulletsMiss, hbAccuracy, hbmenu);
+        gGameOver.getChildren().addAll(iv_bg, iv_pauseLogo, vbStats);
+
+        // Show menu
+        gGameMenu.getChildren().add(gGameOver);
+
+    }
+
+    // Set back settings
+    public static void resetSettings(){
+        Settings.isPaused = false;
+        Settings.score = 0;
+        Settings.time = 0;
+        Settings.maxTime = 2; // TODO: change back to 90
+        // Bullets
+        Settings.reloading = false;
+        Settings.reloadTime = 0.6; // Seconds
+        Settings.currentReloadTime = 0;
+        Settings.maxBullets = 6; // Max bullets player can have loaded
+        Settings.currentBullets = 6; // Players bullets loaded
+        Settings.bulletsShot = 0; // How many times player shot a bullet
+        Settings.bulletsHit = 0; // How many birds player hit
+        // Birds
+        Settings.birdSpawnTime = 400;
+        Settings.birdSize = 0.1;
+        Settings.maxBirdsSpawned = 6; // Max birds can be on the screen at the same time
+        Settings.maxBirdsSpeed = 0.5;
+        Settings.minBirdsSpeed = 0.1;
+        Settings.maxBirdsVerticalSpeed = 0.08;
+        Settings.minBirdsVerticalSpeed = 0.03;
+        Settings.maxBirdsVerticalMove = Settings.height * 0.06;
+        Settings.minBirdsVerticalMove = Settings.height * 0.03;
+        Settings.birdRandomizedSize = 0.5; // Adds to random size (0.0 - 1.0) this number
+
+        // Clear birds (Because birds is a static field)
+        BirdHandler.clearBirds();
+    }
 
     // Save settings and launch game
     void saveSettings(String username, boolean defaultCursor, int resW, int resH){
@@ -611,7 +873,7 @@ public class sceneHandler {
     }
 
     // Cursor interact
-    public void onMouseUI(Node n){
+    public static void onMouseUI(Node n){
 
         n.setOnMouseEntered(e->{
             changeCursor(1);
@@ -674,7 +936,7 @@ public class sceneHandler {
     }
 
     // Shot handler
-    public static void shot(MouseEvent e){
+    public static void shot(MouseEvent event) {
         if(Settings.isPaused)
             return;
 
@@ -686,9 +948,15 @@ public class sceneHandler {
             reload();
         }
         else{
-            Settings.currentBullets--;
-            audio.playShot();
-            Settings.bulletsShot++;
+            if( (event.getTarget()).toString().contains("Bird") ){
+                audio.playShot();
+                Settings.bulletsShot++;
+            }else{
+                audio.playShot();
+                Settings.bulletsShot++;
+                Settings.currentBullets--;
+            }
+
         }
     }
 

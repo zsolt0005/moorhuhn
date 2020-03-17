@@ -52,23 +52,16 @@ public class BirdHandler {
         }
     }
 
+    public static void clearBirds(){
+        if(g != null)
+            g.getChildren().removeAll();
+        birds.clear();
+    }
     public static void destroy(Bird b){
-        // Get speed and size to determinate points to be added
-        double speed = b.originalSpeed;
-        double size = b.size;
-        double maxSize = b.maxSize;
-        double pointMultiplier = 10;
-
-        // Add points
-        int points = (int)(pointMultiplier * (speed + ( maxSize - size)));
-        Settings.score += points;
-        Settings.bulletsHit++;
-
         // Delete from view
         g.getChildren().remove(b);
 
         // Remove from list
         birds.remove(b);
-
     }
 }

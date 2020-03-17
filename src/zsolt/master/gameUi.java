@@ -41,9 +41,16 @@ public class gameUi extends Canvas {
     }
 
     void timeHandler(){
-        // TODO: check for time out (GAME OVER)
-        if(!Settings.isPaused)
-            Settings.time++;
+        if(Settings.isPaused)
+            return;
+
+        // Increase time
+        Settings.time++;
+
+        // Check for timeout
+        if(Settings.time >= Settings.maxTime)
+            sceneHandler.gameOver();
+
     }
 
     String getTime(){

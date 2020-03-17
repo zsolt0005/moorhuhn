@@ -14,10 +14,13 @@ CheckBox{
 
 ComboBox{-fx-font-size: 14;}
 
-Button{
-    -fx-background-color: transparent;
+Button{-fx-background-color: transparent;}
+
+VBox{-fx-alignment: center;}
+
+#Highlight{
+    -fx-font-weight: bold;
+    -fx-text-fill: Green;
 }
 
-VBox{
-    -fx-alignment: center;
-}
+#GameOverLabel{-fx-text-fill: White;}

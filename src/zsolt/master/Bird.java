@@ -79,6 +79,11 @@ public class Bird extends Canvas {
         // Animation speed
         this.animSpeed = (int)(400 * ((Settings.maxBirdsSpeed + 0.1) - this.speed)); // Differentiate speed with animation as well
 
+        // Min & Max values for animation speed
+        if(this.animSpeed < 40)
+            this.animSpeed = 40;
+
+
         // Save start PosY
         this.startPosY = getLayoutY();
 
@@ -116,6 +121,8 @@ public class Bird extends Canvas {
             if(isDead || Settings.isPaused || isPassive || Settings.currentBullets -1 < 0)
                 return;
 
+            // Decrease ammo
+            Settings.currentBullets--;
             // Set dead state
             this.isDead = true;
             // Set fixed animation speed for die animation
@@ -125,6 +132,12 @@ public class Bird extends Canvas {
             // Stop movement
             this.speed = 0;
             this.verticalSpeed = 0;
+
+            // Add points TODO: Correct point number
+            double pointMultiplier = 10;
+            int points = (int)(pointMultiplier * (originalSpeed + ( maxSize - size)));
+            Settings.score += points;
+            Settings.bulletsHit++;
 
             // Play sound effect
             audio.playHit();

@@ -27,12 +27,14 @@ public class Settings {
 
     // INGAME UI
     public static double uiHeight = 0.1; // 0.1 = 10% of screen height
+    public static int mainMenuBirdsCount = 6;
 
     // GAME (Every time needs to be set to default -> as is below)
         // General
     public static boolean isPaused = false;
     public static int score = 0;
     public static int time = 0;
+    public static int maxTime = 90;
         // Bullets
     public static  boolean reloading = false;
     public static double reloadTime = 0.6; // Seconds

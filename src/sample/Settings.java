@@ -48,7 +48,7 @@ public class Settings {
     public static boolean isGameOver = false;
     public static int score = 0;
     public static int time = 0;
-    public static int maxTime = 10; // TODO: Set back to 90
+    public static int maxTime = 90;
         // Bullets
     public static  boolean reloading = false;
     public static double reloadTime = 0.6; // Seconds

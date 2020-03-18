@@ -51,7 +51,6 @@ public class gameUi extends Canvas {
         Settings.time++;
 
         // Check for timeout
-        // TODO: Sometimes saves twice
         if(Settings.time >= Settings.maxTime){
             sceneHandler.gameOver();
             Settings.isGameOver = true;

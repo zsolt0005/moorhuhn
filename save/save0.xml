@@ -2,19 +2,19 @@
 <java version="13.0.2" class="java.beans.XMLDecoder">
  <object class="zsolt.save.saveData">
   <void property="accuracy">
-   <double>76.92307692307692</double>
+   <double>69.23076923076923</double>
   </void>
   <void property="hits">
-   <int>10</int>
+   <int>9</int>
   </void>
   <void property="missed">
-   <int>3</int>
+   <int>4</int>
   </void>
   <void property="name">
-   <string>Developer build</string>
+   <string>fantasY</string>
   </void>
   <void property="score">
-   <int>392</int>
+   <int>67</int>
   </void>
   <void property="shots">
    <int>13</int>

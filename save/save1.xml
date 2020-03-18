@@ -2,22 +2,22 @@
 <java version="13.0.2" class="java.beans.XMLDecoder">
  <object class="zsolt.save.saveData">
   <void property="accuracy">
-   <double>33.333333333333336</double>
+   <double>90.0</double>
   </void>
   <void property="hits">
-   <int>4</int>
+   <int>9</int>
   </void>
   <void property="missed">
-   <int>8</int>
+   <int>1</int>
   </void>
   <void property="name">
-   <string>Developer build</string>
+   <string>fantasY</string>
   </void>
   <void property="score">
-   <int>156</int>
+   <int>66</int>
   </void>
   <void property="shots">
-   <int>12</int>
+   <int>10</int>
   </void>
  </object>
 </java>

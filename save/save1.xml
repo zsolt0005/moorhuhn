@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="13.0.2" class="java.beans.XMLDecoder">
+ <object class="zsolt.save.saveData">
+  <void property="accuracy">
+   <double>33.333333333333336</double>
+  </void>
+  <void property="hits">
+   <int>4</int>
+  </void>
+  <void property="missed">
+   <int>8</int>
+  </void>
+  <void property="name">
+   <string>Developer build</string>
+  </void>
+  <void property="score">
+   <int>156</int>
+  </void>
+  <void property="shots">
+   <int>12</int>
+  </void>
+ </object>
+</java>

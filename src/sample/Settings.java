@@ -1,6 +1,15 @@
 package sample;
 
+import javafx.scene.Group;
+import zsolt.master.gameUi;
+
 public class Settings {
+
+    // Singleton
+    public static gameUi gameUiSingleton = null;
+    public static Group gPauseMenuSingleton = null;
+    public static Group gGameOverSingleton = null;
+    public static Group highScoreSingleton = null;
 
     // Monitor
     public static double resolutionX = 0;
@@ -36,9 +45,10 @@ public class Settings {
     // GAME (Every time needs to be set to default -> as is below)
         // General
     public static boolean isPaused = false;
+    public static boolean isGameOver = false;
     public static int score = 0;
     public static int time = 0;
-    public static int maxTime = 90;
+    public static int maxTime = 10; // TODO: Set back to 90
         // Bullets
     public static  boolean reloading = false;
     public static double reloadTime = 0.6; // Seconds

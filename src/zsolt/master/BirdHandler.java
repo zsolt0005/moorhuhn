@@ -14,17 +14,12 @@ import java.util.Random;
 public class BirdHandler {
 
     static List<Bird> birds = new ArrayList<>();
-    static Group g;
+    public static Group g;
 
     public BirdHandler(Group g){
 
         // Set the group
         this.g = g;
-
-        // Spawn birds (Spawn new bird each time there is less than the maximal amount)
-        Timeline tSpawn = new Timeline(new KeyFrame(Duration.millis(Settings.birdSpawnTime), e->spawn()));
-        tSpawn.setCycleCount(Animation.INDEFINITE);
-        tSpawn.play();
     }
 
     void spawn(){

@@ -18,6 +18,12 @@ Button{-fx-background-color: transparent;}
 
 VBox{-fx-alignment: center;}
 
+ScrollPane{
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 #Highlight{
     -fx-text-fill: Green;
     -fx-font-family: Dimbo;

@@ -4,7 +4,10 @@ package zsolt.master;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
@@ -12,6 +15,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,14 +26,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+
+// Other
 import sample.Main;
 import sample.Settings;
+import java.util.Random;
 
 // AWT
 import java.awt.*;
-import java.util.Random;
 
 // My imports
+import zsolt.save.saveData;
+import zsolt.save.saveHandler;
 
 public class sceneHandler {
 
@@ -53,15 +61,13 @@ public class sceneHandler {
     static ImageCursor ic2 = new ImageCursor(cursor2, cursor0.getWidth() / 2, cursor0.getHeight() / 2);
 
     // Temporary
-    static Group gGameMenu;
-    static Group gPauseMenu;
-    static Group gGameOver;
-    static BirdHandler bh;
-    static gameUi gui;
+    static Group gGameMenu = new Group();
+    static Group gMainMenu = new Group();
+    static BirdHandler bh = new BirdHandler(gGameMenu);
+    static Timeline tSpawn = new Timeline(new KeyFrame(Duration.millis(Settings.birdSpawnTime), e->bh.spawn()));
 
     // </editor-fold>
 
-    // LAUNCH SCENE TODO: DEVELOPER SETTINGS SET
     public void setupLaunchMenu(){
         // Get menu
         Group g = new Group();
@@ -248,29 +254,78 @@ public class sceneHandler {
         // Set base cursor type
         changeCursor(0);
 
-        // TODO: DEVELOPER SETTIGNS
-
         // Show this scene
-        // changeScene(Main.launchMenu);
-        ///*
-        Settings.username = "Developer build";
-        Settings.width = 1280;
-        Settings.height = 720;
-        setupMainMenu();
-        Main.mainMenu.setCursor(ic0);
-        changeScene(Main.mainMenu);
-        //*/
+        changeScene(Main.launchMenu);
+    }
+
+    // Prepare Scenes
+    void prepareScenes(){
+
+        // <editor-fold desc="GAME SCENE">
+
+        // Get menu
+        gGameMenu = new Group();
+
+        Scene m = new Scene(gGameMenu, Settings.width, Settings.height);
+        m.getStylesheets().add("file:css/global.css");
+
+        // <editor-fold desc="Detect actions">
+
+        // On click
+        m.setOnMousePressed(e->shot(e));
+
+        // On keyboard pressed
+        m.setOnKeyPressed(e->{
+
+            if(Settings.time >= Settings.maxTime)
+                return;
+
+            // (R) -> reload
+            if(e.getCode() == KeyCode.R)
+                reload();
+
+            // (ESC) -> pause
+            if(e.getCode() == KeyCode.ESCAPE){
+                Settings.isPaused = !Settings.isPaused;
+
+                if(Settings.isPaused){
+                    showPauseMenu();
+                    Settings.music = false;
+                }
+                else{
+                    hidePauseMenu();
+                    Settings.music = true;
+                }
+            }
+        });
+
+        // </editor-fold>
+
+        // Set menu
+        Main.gameScene = m;
+
+        // </editor-fold>
+
+        // <editor-fold desc="MAIN MENU">
+
+        // Get menu
+        gMainMenu = new Group();
+
+        // Create scene and apply global css
+        Scene m1 = new Scene(gMainMenu, Settings.width, Settings.height);
+        m1.getStylesheets().add("file:css/global.css");
+
+        // Set menu
+        Main.mainMenu = m1;
+
+        // </editor-fold>
     }
 
     // MAIN SCENE
     void setupMainMenu(){
-        // Get menu
-        Group g = new Group();
-        StackPane root = new StackPane();
 
-        // Create scene and apply global css
-        Scene m = new Scene(g, Settings.width, Settings.height);
-        m.getStylesheets().add("file:css/global.css");
+        // Get menu
+        gMainMenu.getChildren().removeAll();
 
         // <editor-fold desc="Background">
 
@@ -335,7 +390,7 @@ public class sceneHandler {
         Button btn_play = new Button();
         btn_play.setGraphic(iv_play);
         onMouseUI(btn_play);
-        btn_play.setOnMouseClicked(e->startGame());
+        btn_play.setOnMouseClicked(e->setupGameScene());
 
         // </editor-fold>
 
@@ -392,7 +447,6 @@ public class sceneHandler {
         hb_audio.getChildren().addAll(btn_music, btn_sound);
         // </editor-fold>
 
-        // TODO: Highscore
         // <editor-fold desc="BUTTON Highscore">
 
         Image img_highScore = new Image("file:img/btn/highScore.png");
@@ -403,6 +457,9 @@ public class sceneHandler {
         Button btn_highScore = new Button();
         btn_highScore.setGraphic(iv_highScore);
         onMouseUI(btn_highScore);
+        btn_highScore.setOnMouseClicked(e->{
+            showHighScore();
+        });
 
         // </editor-fold>
 
@@ -425,10 +482,9 @@ public class sceneHandler {
 
         // Add all elements to scene
         vb_menu.getChildren().addAll(btn_play, hb_audio, btn_highScore, btn_exit);
-        g.getChildren().addAll(iv_bg, gBG, iv_logo, vb_menu);
+        gMainMenu.getChildren().addAll(iv_bg, gBG, iv_logo, vb_menu);
 
-        // Set menu
-        Main.mainMenu = m;
+        changeScene(Main.mainMenu);
     }
 
     // GAME SCENE
@@ -436,12 +492,7 @@ public class sceneHandler {
         // Reset settings
         resetSettings();
 
-        // Get menu
-        gGameMenu = new Group();
-        StackPane root = new StackPane();
-
-        Scene m = new Scene(gGameMenu, Settings.width, Settings.height);
-        m.getStylesheets().add("file:css/global.css");
+        gGameMenu.getChildren().removeAll();
 
         // <editor-fold desc="Background">
 
@@ -458,61 +509,40 @@ public class sceneHandler {
 
         // </editor-fold>
 
-        // <editor-fold desc="Game UI">
-
-        if(gui == null)
-            gui = new gameUi();
-
-        // </editor-fold>
+        if(Settings.gameUiSingleton == null)
+            Settings.gameUiSingleton = new gameUi();
+        else{
+            Settings.gameUiSingleton.t.stop();
+            Settings.gameUiSingleton.t2.stop();
+            Settings.gameUiSingleton = null;
+            Settings.gameUiSingleton = new gameUi();
+        }
 
         // <editor-fold desc="Bird handler">
 
-        bh = new BirdHandler(gGameMenu);
-
-        // </editor-fold>
-
-        // <editor-fold desc="Detect actions">
-
-        // On click
-        m.setOnMousePressed(e->shot(e));
-
-        // On keyboard pressed
-        m.setOnKeyPressed(e->{
-
-            if(Settings.time >= Settings.maxTime)
-                return;
-
-            // (R) -> reload
-            if(e.getCode() == KeyCode.R)
-                reload();
-
-            // (ESC) -> pause
-            if(e.getCode() == KeyCode.ESCAPE){
-                Settings.isPaused = !Settings.isPaused;
-
-                if(Settings.isPaused){
-                    showPauseMenu();
-                    Settings.music = false;
-                }
-                else{
-                    hidePauseMenu();
-                    Settings.music = true;
-                }
-            }
-        });
+        // Spawn birds (Spawn new bird each time there is less than the maximal amount)ň
+        bh.g = gGameMenu;
+        tSpawn.setCycleCount(Animation.INDEFINITE);
+        tSpawn.play();
 
         // </editor-fold>
 
         // Add all elements to scene
-        gGameMenu.getChildren().addAll(iv_bg, gui);
+        gGameMenu.getChildren().addAll(iv_bg, Settings.gameUiSingleton);
 
-        // Set menu
-        Main.gameScene = m;
+        changeScene(Main.gameScene);
     }
 
     // PAUSE
     static void showPauseMenu(){
-        gPauseMenu = new Group();
+        if(Settings.gPauseMenuSingleton == null)
+            Settings.gPauseMenuSingleton = new Group();
+        else{
+            Settings.gPauseMenuSingleton = null;
+            Settings.gPauseMenuSingleton = new Group();
+        }
+
+        Settings.gPauseMenuSingleton.getChildren().removeAll();
 
         // <editor-fold desc="Setup menu">
 
@@ -521,12 +551,12 @@ public class sceneHandler {
         int prefHeight = (int)(Settings.height * 0.7);
 
             // Set size
-        gPauseMenu.prefWidth(prefWidth);
-        gPauseMenu.prefHeight(prefHeight);
+        Settings.gPauseMenuSingleton.prefWidth(prefWidth);
+        Settings.gPauseMenuSingleton.prefHeight(prefHeight);
 
             // Set location
-        gPauseMenu.setLayoutX((Settings.width / 2) - (prefWidth / 2));
-        gPauseMenu.setLayoutY((Settings.height / 2) - (prefHeight / 2));
+        Settings.gPauseMenuSingleton.setLayoutX((Settings.width / 2) - (prefWidth / 2));
+        Settings.gPauseMenuSingleton.setLayoutY((Settings.height / 2) - (prefHeight / 2));
 
         // </editor-fold>
 
@@ -581,6 +611,7 @@ public class sceneHandler {
             Settings.music = true;
             Settings.isPaused = false;
             tReload.stop();
+            tSpawn.stop();
         });
 
         // </editor-fold>
@@ -592,23 +623,149 @@ public class sceneHandler {
 
         // Add elements
         vbResume.getChildren().addAll(iv_resume, iv_exit);
-        gPauseMenu.getChildren().addAll(iv_bg, iv_pauseLogo, vbResume);
+        Settings.gPauseMenuSingleton.getChildren().addAll(iv_bg, iv_pauseLogo, vbResume);
 
-        // Show menu
-        gGameMenu.getChildren().add(gPauseMenu);
+        // Add pause menu
+        gGameMenu.getChildren().add(Settings.gPauseMenuSingleton);
     }
     static void hidePauseMenu() {
         // Hide menu
-        gGameMenu.getChildren().remove(gPauseMenu);
+        gGameMenu.getChildren().remove(Settings.gPauseMenuSingleton);
+    }
+
+    // HighScore
+    static void showHighScore(){
+        if(Settings.highScoreSingleton == null)
+            Settings.highScoreSingleton = new Group();
+        else{
+            Settings.highScoreSingleton = null;
+            Settings.highScoreSingleton = new Group();
+        }
+
+        Settings.highScoreSingleton.getChildren().removeAll();
+
+        // <editor-fold desc="Setup menu">
+
+        // Prepare size
+        int prefWidth = (int)(Settings.width * 0.4);
+        int prefHeight = (int)(Settings.height * 0.8);
+
+        // Set size
+        Settings.highScoreSingleton.prefWidth(prefWidth);
+        Settings.highScoreSingleton.prefHeight(prefHeight);
+
+        // Set location
+        Settings.highScoreSingleton.setLayoutX((Settings.width / 2) - (prefWidth / 2));
+        Settings.highScoreSingleton.setLayoutY((Settings.height / 2) - (prefHeight / 2));
+
+        // </editor-fold>
+
+        // <editor-fold desc="Background">
+
+        Image bg = new Image("file:img/menu/table.png");
+        ImageView iv_bg = new ImageView(bg);
+        iv_bg.setFitWidth(prefWidth);
+        iv_bg.setFitHeight(prefHeight);
+
+        // </editor-fold>
+
+        // <editor-fold desc="HighScore logo">
+
+        Image pauseLogo = new Image("file:img/menu/highScore-logo.png");
+        ImageView iv_pauseLogo = new ImageView(pauseLogo);
+        iv_pauseLogo.setPreserveRatio(true);
+        iv_pauseLogo.setFitWidth(prefWidth * 0.8);
+        iv_pauseLogo.setLayoutX( (prefWidth / 2) - (iv_pauseLogo.getFitWidth() / 2) );
+
+        // </editor-fold>
+
+        // <editor-fold desc="Get all save data">
+
+        ScrollPane sp = new ScrollPane();
+        sp.setPrefWidth(prefWidth * 0.87);
+        sp.setPrefHeight(prefHeight * 0.6);
+        sp.setLayoutX(prefWidth * 0.06);
+        sp.setLayoutY(prefHeight * 0.3);
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+        VBox vb = new VBox();
+        vb.setPrefWidth(prefWidth);
+        vb.setAlignment(Pos.BOTTOM_CENTER);
+
+            // get all saves to array
+        saveData[] saveObject = saveHandler.load();
+
+        // TODO: From high to low
+        for(int i = 0; i < saveObject.length; i++){
+            // Setup HBox
+            HBox hb = new HBox();
+            hb.setSpacing(prefWidth * 0.05);
+
+
+            // Set labels
+            Label name = new Label(saveObject[i].getName() + " -> ");
+            Label score = new Label(saveObject[i].getScore() + "");
+            hb.setMargin(name, new Insets(0, 0, 0, prefWidth * 0.1));
+
+            // Set tooltip
+            Tooltip t = new Tooltip(" Shots/Hits/Missed: " + saveObject[i].getShots() + "/" + saveObject[i].getHits() + "/" + saveObject[i].getMissed() + " | Accuracy: " + String.format("%.2f", saveObject[i].getAccuracy()) + "%" );
+            name.setTooltip(t);
+            score.setTooltip(t);
+
+            // Set font
+            name.setStyle("-fx-text-fill: white;" +
+                    "-fx-font-size: " + (4 + (Settings.width * Settings.fontScale)) + ";");
+            score.setStyle("-fx-text-fill: white;" +
+                    "-fx-font-size: " + (4 + (Settings.width * Settings.fontScale)) + ";");
+
+            // Add to HBox
+            hb.getChildren().addAll(name, score);
+
+            // Add to VBox
+            vb.getChildren().add(hb);
+        }
+
+        // </editor-fold>
+
+        // <editor-fold desc="BUTTON Close">
+
+        Image imgClose = new Image("file:img/btn/button_close.png");
+        ImageView iv_Close = new ImageView(imgClose);
+        iv_Close.setPreserveRatio(true);
+        iv_Close.setFitWidth(prefWidth * 0.1);
+        iv_Close.setLayoutX(prefWidth - iv_Close.getFitWidth() - prefWidth * 0.01);
+        onMouseUI(iv_Close);
+        iv_Close.setOnMouseClicked(e->hideHighScore());
+
+        // </editor-fold>
+
+        // Add elements
+        sp.setContent(vb);
+        Settings.highScoreSingleton.getChildren().addAll(iv_bg, iv_pauseLogo, sp, iv_Close);
+
+        // Add pause menu
+        gMainMenu.getChildren().add(Settings.highScoreSingleton);
+    }
+    static void hideHighScore() {
+        // Hide menu
+        gMainMenu.getChildren().remove(Settings.highScoreSingleton);
     }
 
     // GAME OVER
     public static void gameOver(){
 
+        if(Settings.gGameOverSingleton == null)
+            Settings.gGameOverSingleton = new Group();
+        else{
+            Settings.gGameOverSingleton = null;
+            Settings.gGameOverSingleton = new Group();
+        }
+
         // Stop game
         Settings.isPaused = true;
 
-        gGameOver = new Group();
+        Settings.gGameOverSingleton.getChildren().removeAll();
 
         // <editor-fold desc="Setup menu">
 
@@ -617,12 +774,12 @@ public class sceneHandler {
         int prefHeight = (int)(Settings.height * 0.7);
 
         // Set size
-        gGameOver.prefWidth(prefWidth);
-        gGameOver.prefHeight(prefHeight);
+        Settings.gGameOverSingleton.prefWidth(prefWidth);
+        Settings.gGameOverSingleton.prefHeight(prefHeight);
 
         // Set location
-        gGameOver.setLayoutX((Settings.width / 2) - (prefWidth / 2));
-        gGameOver.setLayoutY((Settings.height / 2) - (prefHeight / 2));
+        Settings.gGameOverSingleton.setLayoutX((Settings.width / 2) - (prefWidth / 2));
+        Settings.gGameOverSingleton.setLayoutY((Settings.height / 2) - (prefHeight / 2));
 
         // </editor-fold>
 
@@ -645,7 +802,6 @@ public class sceneHandler {
 
         // </editor-fold>
 
-        // TODO: Scale stats text
         // <editor-fold desc="Statistics">
         VBox vbStats = new VBox();
 
@@ -730,6 +886,10 @@ public class sceneHandler {
         iv_Again.setFitWidth(prefBTNWidth);
         onMouseUI(iv_Again);
         iv_Again.setOnMouseClicked(e->{
+            Settings.music = true;
+            Settings.isPaused = false;
+            tReload.stop();
+            tSpawn.stop();
             setupGameScene();
             changeScene(Main.gameScene);
         });
@@ -745,8 +905,10 @@ public class sceneHandler {
         onMouseUI(iv_Close);
         iv_Close.setOnMouseClicked(e->{
             changeScene(Main.mainMenu);
+            Settings.music = true;
             Settings.isPaused = false;
             tReload.stop();
+            tSpawn.stop();
         });
 
         // </editor-fold>
@@ -767,18 +929,18 @@ public class sceneHandler {
         // Add elements
         hbmenu.getChildren().addAll(iv_Again, iv_Close);
         vbStats.getChildren().addAll(hbScore, hbBullets, hbBulletsHit, hbBulletsMiss, hbAccuracy, hbmenu);
-        gGameOver.getChildren().addAll(iv_bg, iv_pauseLogo, vbStats);
+        Settings.gGameOverSingleton.getChildren().addAll(iv_bg, iv_pauseLogo, vbStats);
 
         // Show menu
-        gGameMenu.getChildren().add(gGameOver);
+        gGameMenu.getChildren().add(Settings.gGameOverSingleton);
 
-        // TODO: SAVE TO XML
-
+        saveHandler.save(Settings.username, Settings.score, Settings.bulletsHit, Settings.bulletsShot, (Settings.bulletsShot - Settings.bulletsHit), accuracy);
     }
 
     // Reset settings
     public static void resetSettings(){
         Settings.isPaused = false;
+        Settings.isGameOver = false;
         Settings.score = 0;
         Settings.time = 0;
         // Bullets
@@ -790,6 +952,7 @@ public class sceneHandler {
 
         // Clear birds (Because birds is a static field)
         BirdHandler.clearBirds();
+        tSpawn.stop();
     }
 
     // Save settings and launch game
@@ -816,6 +979,7 @@ public class sceneHandler {
         Settings.height = resH;
 
         // Call setup scenes
+        prepareScenes();
         setupMainMenu();
         setupGameScene();
 
@@ -925,15 +1089,6 @@ public class sceneHandler {
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
         Main.window.setX((primScreenBounds.getWidth() - s.getWidth()) / 2);
         Main.window.setY((primScreenBounds.getHeight() - s.getHeight()) / 2);
-    }
-
-    // Start game
-    public void startGame(){
-        // Prepare game scene
-        setupGameScene();
-
-        // change scene
-        changeScene(Main.gameScene);
     }
 
     // Shot handler

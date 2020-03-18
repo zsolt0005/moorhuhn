@@ -3,6 +3,7 @@ package zsolt.master;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -16,6 +17,8 @@ public class gameUi extends Canvas {
 
     GraphicsContext gc;
     Image bullet = new Image("file:img/bullets/bullet.png", 0, getHeight() * 0.8, true, true);
+    Timeline t;
+    Timeline t2;
 
     public gameUi(){
 
@@ -30,27 +33,29 @@ public class gameUi extends Canvas {
         setLayoutY(Settings.height * (1.0 - Settings.uiHeight));
 
         // Draw UI every 10 millis.
-        Timeline t = new Timeline(new KeyFrame(Duration.millis(10), e->draw()));
+        t = new Timeline(new KeyFrame(Duration.millis(10), e->draw()));
         t.setCycleCount(Animation.INDEFINITE);
         t.play();
 
         // Time handler (every 1 sec)
-        Timeline t2 = new Timeline(new KeyFrame(Duration.millis(1000), e->timeHandler()));
+        t2 = new Timeline(new KeyFrame(Duration.millis(1000), e->timeHandler()));
         t2.setCycleCount(Animation.INDEFINITE);
         t2.play();
     }
 
     void timeHandler(){
-        if(Settings.isPaused)
+        if(Settings.isPaused || Settings.isGameOver)
             return;
 
         // Increase time
         Settings.time++;
 
         // Check for timeout
-        if(Settings.time >= Settings.maxTime)
+        // TODO: Sometimes saves twice
+        if(Settings.time >= Settings.maxTime){
             sceneHandler.gameOver();
-
+            Settings.isGameOver = true;
+        }
     }
 
     String getTime(){

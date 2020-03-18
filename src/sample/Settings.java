@@ -13,6 +13,10 @@ public class Settings {
     public static int launchHeight = 700;
     public static boolean fullScreenMode = false;
 
+    // Text settings
+    public static int fontSize = 8;
+    public static double fontScale = 0.02;
+
     // Cursor settings
     public static boolean defaultCursor = false;
 

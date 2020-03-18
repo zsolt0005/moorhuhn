@@ -97,6 +97,13 @@ public class gameUi extends Canvas {
         gc.strokeText("Score: " + Settings.score, (getWidth() * 0.05) + (bullet.getWidth() / 2), getHeight() / 2);
 
         // Game time -> CENTER
+        if(Settings.time <= Settings.maxTime / 2)
+            gc.setFill(Color.GREEN);
+        if(Settings.time > Settings.maxTime / 2 && Settings.time < Settings.maxTime * 0.75)
+            gc.setFill(Color.ORANGE);
+        if(Settings.time > Settings.maxTime * 0.75)
+            gc.setFill(Color.RED);
+
         gc.fillText(getTime(), getWidth() * 0.5, getHeight() / 2);
         gc.strokeText(getTime(), getWidth() * 0.5, getHeight() / 2);
 

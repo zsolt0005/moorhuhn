@@ -134,7 +134,7 @@ public class Bird extends Canvas {
             this.verticalSpeed = 0;
 
             // Add points TODO: Correct point number
-            double pointMultiplier = 10;
+            double pointMultiplier = 1.5;
             int points = (int)(pointMultiplier * (originalSpeed + ( maxSize - size)));
             Settings.score += points;
             Settings.bulletsHit++;

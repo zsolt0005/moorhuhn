@@ -19,8 +19,10 @@ Button{-fx-background-color: transparent;}
 VBox{-fx-alignment: center;}
 
 #Highlight{
-    -fx-font-weight: bold;
     -fx-text-fill: Green;
+    -fx-font-family: Dimbo;
 }
-
-#GameOverLabel{-fx-text-fill: White;}
+#GameOverLabel{
+    -fx-text-fill: White;
+    -fx-font-family: Dimbo;
+}

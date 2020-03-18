@@ -54,10 +54,10 @@ public class sceneHandler {
 
     // Temporary
     static Group gGameMenu;
-    Group gPauseMenu;
+    static Group gPauseMenu;
     static Group gGameOver;
-    BirdHandler bh;
-    gameUi gui;
+    static BirdHandler bh;
+    static gameUi gui;
 
     // </editor-fold>
 
@@ -432,7 +432,7 @@ public class sceneHandler {
     }
 
     // GAME SCENE
-    void setupGameScene(){
+    static void setupGameScene(){
         // Reset settings
         resetSettings();
 
@@ -511,7 +511,7 @@ public class sceneHandler {
     }
 
     // PAUSE
-    void showPauseMenu(){
+    static void showPauseMenu(){
         gPauseMenu = new Group();
 
         // <editor-fold desc="Setup menu">
@@ -597,7 +597,7 @@ public class sceneHandler {
         // Show menu
         gGameMenu.getChildren().add(gPauseMenu);
     }
-    void hidePauseMenu() {
+    static void hidePauseMenu() {
         // Hide menu
         gGameMenu.getChildren().remove(gPauseMenu);
     }
@@ -645,6 +645,7 @@ public class sceneHandler {
 
         // </editor-fold>
 
+        // TODO: Scale stats text
         // <editor-fold desc="Statistics">
         VBox vbStats = new VBox();
 
@@ -654,36 +655,44 @@ public class sceneHandler {
         Label lb_Score = new Label(Settings.score + "");
         lb_text1.setId("GameOverLabel");
         lb_Score.setId("Highlight");
+        lb_text1.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
+        lb_Score.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
         hbScore.getChildren().addAll(lb_text1, lb_Score);
         hbScore.setPrefWidth(prefWidth);
         hbScore.setAlignment(Pos.CENTER);
 
         // HBox Bullets
         HBox hbBullets = new HBox();
-        Label lb_text2 = new Label("Bullets shot: ");
+        Label lb_text2 = new Label("Shots: ");
         Label lb_BulletsShot = new Label(Settings.bulletsShot + "");
         lb_text2.setId("GameOverLabel");
         lb_BulletsShot.setId("Highlight");
+        lb_text2.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
+        lb_BulletsShot.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
         hbBullets.getChildren().addAll(lb_text2, lb_BulletsShot);
         hbBullets.setPrefWidth(prefWidth);
         hbBullets.setAlignment(Pos.CENTER);
 
         // HBox Bullets Hit
         HBox hbBulletsHit = new HBox();
-        Label lb_text3 = new Label("Bullets hit: ");
+        Label lb_text3 = new Label("Hits: ");
         Label lb_BulletsShotHit = new Label(Settings.bulletsHit + "");
         lb_text3.setId("GameOverLabel");
         lb_BulletsShotHit.setId("Highlight");
+        lb_text3.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
+        lb_BulletsShotHit.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
         hbBulletsHit.getChildren().addAll(lb_text3, lb_BulletsShotHit);
         hbBulletsHit.setPrefWidth(prefWidth);
         hbBulletsHit.setAlignment(Pos.CENTER);
 
         // HBox Bullets Missed
         HBox hbBulletsMiss = new HBox();
-        Label lb_text4 = new Label("Bullets missed: ");
+        Label lb_text4 = new Label("Missed: ");
         Label lb_BulletsShotMiss = new Label((Settings.bulletsShot - Settings.bulletsHit) + "");
         lb_text4.setId("GameOverLabel");
         lb_BulletsShotMiss.setId("Highlight");
+        lb_text4.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
+        lb_BulletsShotMiss.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
         hbBulletsMiss.getChildren().addAll(lb_text4, lb_BulletsShotMiss);
         hbBulletsMiss.setPrefWidth(prefWidth);
         hbBulletsMiss.setAlignment(Pos.CENTER);
@@ -695,16 +704,17 @@ public class sceneHandler {
 
         HBox hbAccuracy = new HBox();
         Label lb_text5 = new Label("Accuracy: ");
-        Label lb_Accuracy = new Label(accuracy + "%");
+        Label lb_Accuracy = new Label(String.format("%.2f", accuracy) + "%");
         lb_text5.setId("GameOverLabel");
         lb_Accuracy.setId("Highlight");
+        lb_text5.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
+        lb_Accuracy.setStyle("-fx-font-size: " + (Settings.fontSize + (Settings.width * Settings.fontScale)));
         hbAccuracy.getChildren().addAll(lb_text5, lb_Accuracy);
         hbAccuracy.setPrefWidth(prefWidth);
         hbAccuracy.setAlignment(Pos.CENTER);
 
         // </editor-fold>
 
-        // TODO: Add functionality to buttons, scale stat text
         // <editor-fold desc="Buttons">
 
         // Box for GAME OVER menu
@@ -720,7 +730,8 @@ public class sceneHandler {
         iv_Again.setFitWidth(prefBTNWidth);
         onMouseUI(iv_Again);
         iv_Again.setOnMouseClicked(e->{
-            System.out.println("Again");
+            setupGameScene();
+            changeScene(Main.gameScene);
         });
 
         // </editor-fold>
@@ -733,7 +744,9 @@ public class sceneHandler {
         iv_Close.setFitWidth(prefBTNWidth);
         onMouseUI(iv_Close);
         iv_Close.setOnMouseClicked(e->{
-            System.out.println("Close");
+            changeScene(Main.mainMenu);
+            Settings.isPaused = false;
+            tReload.stop();
         });
 
         // </editor-fold>
@@ -759,33 +772,21 @@ public class sceneHandler {
         // Show menu
         gGameMenu.getChildren().add(gGameOver);
 
+        // TODO: SAVE TO XML
+
     }
 
-    // Set back settings
+    // Reset settings
     public static void resetSettings(){
         Settings.isPaused = false;
         Settings.score = 0;
         Settings.time = 0;
-        Settings.maxTime = 2; // TODO: change back to 90
         // Bullets
         Settings.reloading = false;
-        Settings.reloadTime = 0.6; // Seconds
         Settings.currentReloadTime = 0;
-        Settings.maxBullets = 6; // Max bullets player can have loaded
         Settings.currentBullets = 6; // Players bullets loaded
         Settings.bulletsShot = 0; // How many times player shot a bullet
         Settings.bulletsHit = 0; // How many birds player hit
-        // Birds
-        Settings.birdSpawnTime = 400;
-        Settings.birdSize = 0.1;
-        Settings.maxBirdsSpawned = 6; // Max birds can be on the screen at the same time
-        Settings.maxBirdsSpeed = 0.5;
-        Settings.minBirdsSpeed = 0.1;
-        Settings.maxBirdsVerticalSpeed = 0.08;
-        Settings.minBirdsVerticalSpeed = 0.03;
-        Settings.maxBirdsVerticalMove = Settings.height * 0.06;
-        Settings.minBirdsVerticalMove = Settings.height * 0.03;
-        Settings.birdRandomizedSize = 0.5; // Adds to random size (0.0 - 1.0) this number
 
         // Clear birds (Because birds is a static field)
         BirdHandler.clearBirds();
@@ -826,7 +827,7 @@ public class sceneHandler {
     }
 
     // Scene changer
-    public void changeScene(Scene scene){
+    public static void changeScene(Scene scene){
         Main.window.setScene(scene);
         centerScreen(scene);
     }
@@ -913,7 +914,7 @@ public class sceneHandler {
     }
 
     // center screen
-    public void centerScreen(Scene s){
+    public  static void centerScreen(Scene s){
 
         // Check for gullScreen mode
         if(Settings.fullScreenMode){

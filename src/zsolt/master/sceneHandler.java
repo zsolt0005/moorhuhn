@@ -22,6 +22,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 // Other
@@ -255,17 +256,23 @@ public class sceneHandler {
         changeScene(Main.launchMenu);
 
         // Show tutorial popUP
-        String message = "TUTORIAL: \n " +
-                "\nHRA:\n" +
+        String message =
+                "HRA:\n" +
                 " • Každá hra trvá 90 sekúnd (01:30)\n" +
                 " • V hre ak stlačíte klávesu 'R' alebo keď vám dôjdu všetky náboje sa vám prebijú postupne náboje\n" +
                 " • Všetky vaše kroky sú zaznamenané a na konci sa spraví štatistika\n" +
                 "\nHIGH SCORE:\n" +
-                " • Pre zobrazenie celej štatistiky, prejdite myšou nad skóre ktoré chcete aby sa zobrazila štatistika\n" +
+                " • Pre zobrazenie celej štatistiky, prejdite myšou nad skóre pri ktorej chcete aby sa zobrazila štatistika\n" +
                 "\nKLÁVESOVÉ SKRATKY (Počas hry)\n" +
                 " • 'ESC' -> Pre pozastavenie hry\n" +
                 " • 'R' -> Pre nabitie nábojov";
-        Alert alert = new Alert(Alert.AlertType.NONE, message, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle("TUTORIAL");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.getButtonTypes().add(ButtonType.OK);
+        Stage ds = (Stage) alert.getDialogPane().getScene().getWindow();
+        ds.getIcons().add(new Image("file:img/icons/titleIcon.png"));
         alert.show();
     }
 
@@ -350,21 +357,6 @@ public class sceneHandler {
         ImageView iv_bg = new ImageView(bg);
         iv_bg.setFitHeight(Settings.height);
         iv_bg.setFitWidth(Settings.width);
-
-        // </editor-fold>
-
-        // <editor-fold desc="Flying birds">
-
-        Group gBG = new Group();
-        for(int i = 0; i < Settings.mainMenuBirdsCount; i++){
-            // Bird size
-            double sizeOfBird = rnd.nextDouble() + Settings.birdRandomizedSize;
-
-            // Create bird
-            Bird b = new Bird(sizeOfBird);
-            b.isPassive = true;
-            gBG.getChildren().add(b);
-        }
 
         // </editor-fold>
 
@@ -493,7 +485,7 @@ public class sceneHandler {
 
         // Add all elements to scene
         vb_menu.getChildren().addAll(btn_play, hb_audio, btn_highScore, btn_exit);
-        gMainMenu.getChildren().addAll(iv_bg, gBG, iv_logo, vb_menu);
+        gMainMenu.getChildren().addAll(iv_bg, iv_logo, vb_menu);
 
         changeScene(Main.mainMenu);
     }

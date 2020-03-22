@@ -4,10 +4,7 @@ package zsolt.master;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
@@ -256,6 +253,20 @@ public class sceneHandler {
 
         // Show this scene
         changeScene(Main.launchMenu);
+
+        // Show tutorial popUP
+        String message = "TUTORIAL: \n " +
+                "\nHRA:\n" +
+                " • Každá hra trvá 90 sekúnd (01:30)\n" +
+                " • V hre ak stlačíte klávesu 'R' alebo keď vám dôjdu všetky náboje sa vám prebijú postupne náboje\n" +
+                " • Všetky vaše kroky sú zaznamenané a na konci sa spraví štatistika\n" +
+                "\nHIGH SCORE:\n" +
+                " • Pre zobrazenie celej štatistiky, prejdite myšou nad skóre ktoré chcete aby sa zobrazila štatistika\n" +
+                "\nKLÁVESOVÉ SKRATKY (Počas hry)\n" +
+                " • 'ESC' -> Pre pozastavenie hry\n" +
+                " • 'R' -> Pre nabitie nábojov";
+        Alert alert = new Alert(Alert.AlertType.NONE, message, ButtonType.OK);
+        alert.show();
     }
 
     // Prepare Scenes

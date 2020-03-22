@@ -1,6 +1,8 @@
 package sample;
 
 import javafx.scene.Group;
+
+// My imports
 import zsolt.master.gameUi;
 
 public class Settings {

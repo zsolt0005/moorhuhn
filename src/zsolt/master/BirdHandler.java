@@ -1,10 +1,6 @@
 package zsolt.master;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
-import javafx.util.Duration;
 import sample.Settings;
 
 import java.util.ArrayList;

@@ -57,6 +57,13 @@ public class BirdHandler {
         g.getChildren().remove(b);
 
         // Remove from list
-        birds.remove(b);
+            // Get object
+        int i =  birds.indexOf(b);
+        Bird bird = birds.get(i);
+
+            // Remove object from list
+        birds.remove(i);
+            // Destroy object
+        bird = null;
     }
 }

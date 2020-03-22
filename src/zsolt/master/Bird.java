@@ -24,6 +24,8 @@ public class Bird extends Canvas {
     List<Image> dead = new ArrayList<>();
 
     // Animation
+    Timeline t;
+    Timeline t2;
     Image toDraw;
     boolean isDead = false;
     boolean finishedDie = false;
@@ -91,7 +93,7 @@ public class Bird extends Canvas {
         init();
 
         // Animation
-        Timeline t = new Timeline(new KeyFrame(Duration.millis(animSpeed), e->{
+        t = new Timeline(new KeyFrame(Duration.millis(animSpeed), e->{
             if(Settings.isPaused || finishedDie)
                 return;
 
@@ -105,7 +107,7 @@ public class Bird extends Canvas {
         t.play();
 
         // Move
-        Timeline t2 = new Timeline(new KeyFrame(Duration.millis(1), e->{
+        t2 = new Timeline(new KeyFrame(Duration.millis(1), e->{
             if(Settings.isPaused || finishedDie)
                 return;
 
@@ -149,6 +151,8 @@ public class Bird extends Canvas {
 
     void die(){
         BirdHandler.destroy(this);
+        t.stop();
+        t2.stop();
     }
     void move(){
         // Move vertically
@@ -226,4 +230,6 @@ public class Bird extends Canvas {
 
         gc.drawImage(toDraw, 0, 0, getWidth(), getHeight());
     }
+
+
 }

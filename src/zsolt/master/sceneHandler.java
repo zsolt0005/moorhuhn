@@ -696,7 +696,6 @@ public class sceneHandler {
             // get all saves to array
         saveData[] saveObject = saveHandler.load();
 
-        // TODO: From high to low
         for(int i = 0; i < saveObject.length; i++){
             // Setup HBox
             HBox hb = new HBox();
@@ -704,12 +703,13 @@ public class sceneHandler {
 
 
             // Set labels
-            Label name = new Label(saveObject[i].getName() + " -> ");
+            Label name = new Label(saveObject[i].getName() + " ->");
             Label score = new Label(saveObject[i].getScore() + "");
             hb.setMargin(name, new Insets(0, 0, 0, prefWidth * 0.1));
 
             // Set tooltip
-            Tooltip t = new Tooltip(" Shots/Hits/Missed: " + saveObject[i].getShots() + "/" + saveObject[i].getHits() + "/" + saveObject[i].getMissed() + " | Accuracy: " + String.format("%.2f", saveObject[i].getAccuracy()) + "%" );
+            Tooltip t = new Tooltip(saveObject[i].getName() + " -> " + saveObject[i].getScore() + " | Shots/Hits/Missed: " + saveObject[i].getShots() + "/" + saveObject[i].getHits() + "/" + saveObject[i].getMissed() + " | Accuracy: " + String.format("%.2f", saveObject[i].getAccuracy()) + "%" );
+            t.setShowDelay(Duration.millis(Settings.tooltipShowDelay));
             name.setTooltip(t);
             score.setTooltip(t);
 

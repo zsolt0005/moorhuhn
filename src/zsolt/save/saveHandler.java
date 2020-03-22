@@ -61,8 +61,23 @@ public class saveHandler {
             e.printStackTrace();
         }
 
+        // Convert list to array
         saveData[] toReturn = new saveData[save.size()];
         save.toArray(toReturn);
+
+        // From high to low
+
+        for(int i = 0; i < toReturn.length; i++){
+            if(i == 0)
+                continue;
+
+            if(toReturn[i - 1].getScore() < toReturn[i].getScore()){
+                saveData s = toReturn[i];
+                toReturn[i] = toReturn[i - 1];
+                toReturn[i - 1] = s;
+                i = 0;
+            }
+        }
 
         return toReturn;
     }

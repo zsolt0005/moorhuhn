@@ -3,6 +3,7 @@ package sample;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -45,6 +46,7 @@ public class Main extends Application {
     // Set up window
     void setupWindow(){
         // Base settings
+        window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH); // Disable ESC on fullscreen
         window.setTitle("Moorhuhn");
         window.setResizable(false);
         window.centerOnScreen();

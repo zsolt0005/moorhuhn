@@ -64,6 +64,16 @@ public class sceneHandler {
     static BirdHandler bh = new BirdHandler(gGameMenu);
     static Timeline tSpawn = new Timeline(new KeyFrame(Duration.millis(Settings.birdSpawnTime), e->bh.spawn()));
 
+    // Load images
+    Image img_musicOn = new Image("file:img/btn/musicOn.png");
+    Image img_musicOff = new Image("file:img/btn/musicOff.png");
+    Image img_soundOff = new Image("file:img/btn/soundOff.png");
+    Image img_soundOn = new Image("file:img/btn/soundOn.png");
+    static Image img_exit = new Image("file:img/btn/exit.png");
+    static Image imgResume = new Image("file:img/btn/resume.png");
+    static Image pauseLogo = new Image("file:img/menu/pause-logo.png");
+    static ImageView iv_exit = new ImageView(img_exit);
+
     // </editor-fold>
 
     public void setupLaunchMenu(){
@@ -306,14 +316,10 @@ public class sceneHandler {
             if(e.getCode() == KeyCode.ESCAPE){
                 Settings.isPaused = !Settings.isPaused;
 
-                if(Settings.isPaused){
+                if(Settings.isPaused)
                     showPauseMenu();
-                    Settings.music = false;
-                }
-                else{
+                else
                     hidePauseMenu();
-                    Settings.music = true;
-                }
             }
         });
 
@@ -401,12 +407,6 @@ public class sceneHandler {
 
         HBox hb_audio = new HBox();
         hb_audio.setAlignment(Pos.TOP_CENTER);
-
-        // Load images
-        Image img_musicOn = new Image("file:img/btn/musicOn.png");
-        Image img_musicOff = new Image("file:img/btn/musicOff.png");
-        Image img_soundOff = new Image("file:img/btn/soundOff.png");
-        Image img_soundOn = new Image("file:img/btn/soundOn.png");
 
         // Base image view
         ImageView iv_music = new ImageView(img_musicOn);
@@ -523,7 +523,7 @@ public class sceneHandler {
 
         // <editor-fold desc="Bird handler">
 
-        // Spawn birds (Spawn new bird each time there is less than the maximal amount)ň
+        // Spawn birds (Spawn new bird each time there is less than the maximal amount)
         bh.g = gGameMenu;
         tSpawn.setCycleCount(Animation.INDEFINITE);
         tSpawn.play();
@@ -574,7 +574,6 @@ public class sceneHandler {
 
         // <editor-fold desc="Pause logo">
 
-        Image pauseLogo = new Image("file:img/menu/pause-logo.png");
         ImageView iv_pauseLogo = new ImageView(pauseLogo);
         iv_pauseLogo.setPreserveRatio(true);
         iv_pauseLogo.setFitWidth(prefWidth * 0.8);
@@ -589,14 +588,12 @@ public class sceneHandler {
 
         // <editor-fold desc="BUTTON Resume">
 
-        Image imgResume = new Image("file:img/btn/resume.png");
         ImageView iv_resume = new ImageView(imgResume);
         iv_resume.setPreserveRatio(true);
         iv_resume.setFitWidth(prefBTNWidth);
         onMouseUI(iv_resume);
         iv_resume.setOnMouseClicked(e->{
             hidePauseMenu();
-            Settings.music = true;
             Settings.isPaused = false;
         });
 
@@ -604,17 +601,18 @@ public class sceneHandler {
 
         // <editor-fold desc="BUTTON Exit">
 
-        Image img_exit = new Image("file:img/btn/exit.png");
-        ImageView iv_exit = new ImageView(img_exit);
         iv_exit.setPreserveRatio(true);
         iv_exit.setFitWidth(prefBTNWidth);
         onMouseUI(iv_exit);
         iv_exit.setOnMouseClicked(e->{
             changeScene(Main.mainMenu);
-            Settings.music = true;
             Settings.isPaused = false;
-            tReload.stop();
-            tSpawn.stop();
+            if(tReload != null)
+                tReload.stop();
+            if(tSpawn != null)
+                tSpawn.stop();
+
+
         });
 
         // </editor-fold>
@@ -633,6 +631,7 @@ public class sceneHandler {
     }
     static void hidePauseMenu() {
         // Hide menu
+        Settings.gPauseMenuSingleton.getChildren().removeAll();
         gGameMenu.getChildren().remove(Settings.gPauseMenuSingleton);
     }
 
@@ -752,6 +751,7 @@ public class sceneHandler {
     }
     static void hideHighScore() {
         // Hide menu
+        Settings.highScoreSingleton.getChildren().removeAll();
         gMainMenu.getChildren().remove(Settings.highScoreSingleton);
     }
 
@@ -889,7 +889,6 @@ public class sceneHandler {
         iv_Again.setFitWidth(prefBTNWidth);
         onMouseUI(iv_Again);
         iv_Again.setOnMouseClicked(e->{
-            Settings.music = true;
             Settings.isPaused = false;
             tReload.stop();
             tSpawn.stop();
@@ -908,10 +907,10 @@ public class sceneHandler {
         onMouseUI(iv_Close);
         iv_Close.setOnMouseClicked(e->{
             changeScene(Main.mainMenu);
-            Settings.music = true;
             Settings.isPaused = false;
             tReload.stop();
             tSpawn.stop();
+            Settings.gGameOverSingleton.getChildren().removeAll();
         });
 
         // </editor-fold>
@@ -1089,9 +1088,9 @@ public class sceneHandler {
             return;
         }
 
-        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-        Main.window.setX((primScreenBounds.getWidth() - s.getWidth()) / 2);
-        Main.window.setY((primScreenBounds.getHeight() - s.getHeight()) / 2);
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds(); // Get monitor resolution
+        Main.window.setX((primScreenBounds.getWidth() - s.getWidth()) / 2); // Set game window at center
+        Main.window.setY((primScreenBounds.getHeight() - s.getHeight()) / 2); // Set game window at center
     }
 
     // Shot handler

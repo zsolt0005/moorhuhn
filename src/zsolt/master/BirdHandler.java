@@ -46,6 +46,10 @@ public class BirdHandler {
     public static void clearBirds(){
         if(g != null)
             g.getChildren().removeAll();
+        for(Bird b : birds){
+            b.t.stop();
+            b.t2.stop();
+        }
         birds.clear();
     }
     public static void destroy(Bird b){
